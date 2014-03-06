@@ -24,13 +24,13 @@ Load GDELT Daily Updates Your PC
 ======================================================
 * Move to the subdirectory data
 * Run on bat file
-	```
-		'gdelt_download.bat'
-	```
-* Or in cmd
-	```
-	python gdelt_download_daily.py fetch -d . -U
-	```
+```
+'gdelt_download.bat'
+```
+* in command line
+```
+python gdelt_download_daily.py fetch -d . -U
+```
 
 	Specifying Credentials for the SAP HANA DB user
 =====================================
