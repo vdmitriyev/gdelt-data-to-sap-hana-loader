@@ -20,7 +20,7 @@ GDELT Table Structure
 * To create table in SAP HANA script 'gdelt_dailyupdates.hdbtable' can be used
 
 
-Loading Data Daily Updates To Your Computer from GDELT
+Load GDELT Daily Updates Your PC
 ======================================================
 * Move to the subdirectory data
 * Run on bat file
