@@ -32,8 +32,8 @@ Load GDELT Daily Updates Your PC
 python gdelt_download_daily.py fetch -d . -U
 ```
 
-	Specifying Credentials for the SAP HANA DB user
-=====================================
+Setting Credentials for the SAP HANA DB
+======================================
 * Create file 'sap_hana_credentials.py'
 * Copy->Paste code below and insert your credentials
 ```
