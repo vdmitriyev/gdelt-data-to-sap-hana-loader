@@ -40,7 +40,7 @@ def get_gdelt_daily_data_from_start_date(directory, start_date, end_date=None):
   """
 
   if end_date is None:
-    end_date = datetime.date.today().strftime("%Y%m%d")
+    end_date = (datetime.date.today()-datetime.timedelta(days=1)).strftime("%Y%m%d")
 
   start_year, start_month, start_day = convert_date(start_date)
   end_year, end_month, end_day = convert_date(end_date) 

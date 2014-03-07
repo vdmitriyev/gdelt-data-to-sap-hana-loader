@@ -185,13 +185,16 @@ class GDELTDataLoader():
 
 		table_fields_types, table_fields_names = self.identify_table_mask()
 		
-		
+		# truncating table
 		if truncate_table:
 			query = "truncate table "  + TABLE_NAME;
 			try:
 				self.run_query(query)
 			except Exception, e:
 				print '[e] Exeption: ' + str(e)
+
+		total_queries = 0
+		total_error_queries = 0
 
 		for directory in self.data_csv_files:
 			for _file in self.data_csv_files[directory]:
@@ -206,12 +209,19 @@ class GDELTDataLoader():
 						# print query
 						try:
 							self.run_query(query)
+							total_queries = total_queries + 1
 						except Exception, e:
-							print '[e] Exeption: ' + str(e) + ' while processing ' + DATA_DIRECTORY + '/' + _file
+							total_error_queries = total_error_queries + 1
+							print '[e] Exeption: S' + str(e) + ' while processing ' + DATA_DIRECTORY + '/' + _file
 							print '\t[q] Query: ' + query
 
 					line = csv_f.readline()				
 				csv_f.close()
+
+		print '[i] Info: Total queries processed %d.' % (total_queries)
+
+		if total_error_queries > 0:
+			print '[i] Info: Total queries with errors %d.' % (total_error_queries)
 		
 def main():
 	"""
