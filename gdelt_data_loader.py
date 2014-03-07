@@ -236,8 +236,7 @@ class GDELTDataLoader():
 					line = csv_f.readline()				
 				csv_f.close()
 				print '[i] Total queries processed from file "%s": %d' % (_file, sub_queries)
-				total_queries = total_queries + sub_queries
-				break;				
+				total_queries = total_queries + sub_queries				
 
 		print '\n[i] Queries processed in total: %d\n' % (total_queries)
 
