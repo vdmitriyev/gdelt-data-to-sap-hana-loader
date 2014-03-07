@@ -8,10 +8,54 @@ import zipfile
 import requests
 import argparse
 import datetime
+import os.path
 
 __author__ = 'John Beieler, johnbeieler.org'
 __email__ = 'jub270@psu.edu'
 
+
+from datetime import date, timedelta
+
+def perdelta(start, end, delta):
+  curr = start
+  while curr <= end:
+    yield curr
+    curr += delta
+
+def convert_date(_date):
+  """
+    (str) -> (int, int, int)
+
+    Recieve _date in format 'yyyyddmm' (for example '20130101').
+  """
+
+  return int(_date[:4]), int(_date[5:6]), int(_date[6:])
+
+def get_gdelt_daily_data_from_start_date(directory, start_date, end_date=None):
+  """
+    (str, date) -> NoneType
+
+    Getting GDELT daily data from given date to the current date.
+
+  """
+
+  if end_date is None:
+    end_date = datetime.date.today().strftime("%Y%m%d")
+
+  start_year, start_month, start_day = convert_date(start_date)
+  end_year, end_month, end_day = convert_date(end_date) 
+
+  for temp_date in perdelta(date(start_year, start_month, start_day), date(end_year, end_month, end_day), timedelta(days=1)):
+    
+    url = '%s.export.CSV.zip' % (temp_date.strftime("%Y%m%d"))
+    file_name = '%s.export.CSV' % (temp_date.strftime("%Y%m%d"))
+
+    get_url = 'http://data.gdeltproject.org/events/{}'.format(url)
+    print('Downloading {}'.format(url))
+
+    if not os.path.isfile( directory + '/' + file_name):
+    	written_file = _download_chunks(directory, get_url)
+    	_unzip_file(directory, written_file)
 
 def get_daily_data(directory, unzip=False):
     """
@@ -192,12 +236,34 @@ if __name__ == '__main__':
                                          daily update for today's date.""",
                                          description="""Download only the
                                          daily update for today's date.""")
+
     fetch_command.add_argument('-d', '--directory', help="""Path of directory
                                for file download""")
+
     fetch_command.add_argument('-U', '--unzip', action='store_true',
                                default=False, help="""Boolean flag indicating
                                whether or not to unzip the downloaded
                                files.""")
+
+    fetch_start_date_command = sub_parse.add_parser('fetch_start_date', 
+                                        help="""Download only the daily update for start date.""",
+                                        description="""Download updates for start date.""")
+    
+    fetch_start_date_command.add_argument('-d', '--directory', 
+                                        help="""Path of directory for file download""")
+
+    fetch_start_date_command.add_argument('-U', '--unzip', 
+                                        action='store_true',
+                                        default=False, 
+                                        help="""Boolean flag indicating whether or not to unzip the downloaded files.""")
+
+    fetch_start_date_command.add_argument('-S', '--startdate',
+                                        default=False, 
+                                        help="""Start date.""")
+
+    fetch_start_date_command.add_argument('-E', '--enddate',
+                                        default=False, 
+                                        help="""End date.""")
 
     fetch_upload_command = sub_parse.add_parser('fetch_upload', help="""Set the
                                                 script to run on a daily basis
@@ -252,6 +318,13 @@ if __name__ == '__main__':
 
     if args.command_name == 'fetch':
         get_daily_data(directory, args.unzip)
+    elif args.command_name == 'fetch_start_date':
+      if args.enddate == False:
+        get_gdelt_daily_data_from_start_date(directory, args.startdate)
+      else:
+        get_gdelt_daily_data_from_start_date(directory, args.startdate, args.enddate)
+
+        
     elif args.command_name == 'fetch_upload':
         get_upload_daily_data(directory, args.bucket, args.folder)
     elif args.command_name == 'schedule_upload':

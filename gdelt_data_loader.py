@@ -6,6 +6,7 @@ from folder_iterator import FolderIterator
 
 DATA_DIRECTORY = 'data'
 TABLE_NAME = '"DEMOUSER00"."uni.vlba.gdelt.data::gdelt_dailyupdates"'
+COUNTRY = 'KAZ'
 
 """
     Author  : Viktor Dmitriyev
@@ -62,7 +63,7 @@ class GDELTDataLoader():
 		return str_row[:-5]
 
 
-	def run_query(self, query):		
+	def run_query(self, query, fetch=False):		
 		"""
 			(Connection, str) -> NoneType
 
@@ -72,10 +73,12 @@ class GDELTDataLoader():
 
 		cursor = self.connection.cursor()
 		executed_cur = cursor.execute(query)
+
 		if executed_cur:
-			result_cur = cursor.fetchall()
-			for row in result_cur:
-					print fetch_row_into_str(row)
+			if fetch:
+				result_cur = cursor.fetchall()
+				for row in result_cur:
+						print fetch_row_into_str(row)
 		else:
 			print "[e] Something wrong with execution."
 
@@ -90,8 +93,7 @@ class GDELTDataLoader():
 		_line_splited = _line.split('\t')
 
 		for value in _line_splited:
-			value_stripped = value.strip().rstrip()
-			# print value_stripped
+			value_stripped = value.strip().rstrip()			
 			result.append(value_stripped)				
 		
 		return result
@@ -103,7 +105,8 @@ class GDELTDataLoader():
 
 			Escape symbols to be used in sql statements.
 		"""
-
+		value = value.replace('\'','"')
+		
 		if len(value) == 0:
 			if sql_type in ('BIGINT', 'INTEGER', 'FLOAT', 'DOUBLE'):
 				return '0'
@@ -175,28 +178,37 @@ class GDELTDataLoader():
 		return table_fields_types, table_fields_names
 
 
-	def fetch_data_from_csv_and_insert(self):
+	def fetch_data_from_csv_and_insert(self, truncate_table=False):
 		"""
 			Fetching data from CSV and loading to database.
 		"""
 
 		table_fields_types, table_fields_names = self.identify_table_mask()
 		
-		# print len(table_fields_types)
+		
+		if truncate_table:
+			query = "truncate table "  + TABLE_NAME;
+			try:
+				self.run_query(query)
+			except Exception, e:
+				print '[e] Exeption: ' + str(e)
 
 		for directory in self.data_csv_files:
 			for _file in self.data_csv_files[directory]:
 				csv_f = open(DATA_DIRECTORY + '/' + _file, "r")
 				line = csv_f.readline()
-				while line:				
-					values_list = self.line_to_list(line)					
-					query = self.form_insert_query(TABLE_NAME, values_list, table_fields_names, table_fields_types)
-					print query
+				while line:
 
-					# try:
-					# 	self.run_query(query)
-					# except Exception, e:
-					# 	print '[e] Exeption: ' + str(e)
+					values_list = self.line_to_list(line)
+
+					if values_list[5] == COUNTRY:
+						query = self.form_insert_query(TABLE_NAME, values_list, table_fields_names, table_fields_types)
+						# print query
+						try:
+							self.run_query(query)
+						except Exception, e:
+							print '[e] Exeption: ' + str(e) + ' while processing ' + DATA_DIRECTORY + '/' + _file
+							print '\t[q] Query: ' + query
 
 					line = csv_f.readline()				
 				csv_f.close()
@@ -209,7 +221,7 @@ def main():
 	"""
 
 	gdl = GDELTDataLoader()
-	gdl.fetch_data_from_csv_and_insert()
+	gdl.fetch_data_from_csv_and_insert(truncate_table=True)
 
 
 if __name__ == '__main__':
