@@ -31,7 +31,7 @@ def convert_date(_date):
 
   return int(_date[:4]), int(_date[5:6]), int(_date[6:])
 
-def get_gdelt_daily_data_from_start_date(directory, start_date, end_date=None):
+def get_gdelt_daily_updates_from_date(directory, from_date, to_date=None):
   """
     (str, date) -> NoneType
 
@@ -39,13 +39,13 @@ def get_gdelt_daily_data_from_start_date(directory, start_date, end_date=None):
 
   """
 
-  if end_date is None:
-    end_date = (datetime.date.today()-datetime.timedelta(days=1)).strftime("%Y%m%d")
+  if to_date is None:
+    to_date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y%m%d")
 
-  start_year, start_month, start_day = convert_date(start_date)
-  end_year, end_month, end_day = convert_date(end_date) 
+  begin_year, begin_month, begin_day = convert_date(from_date)
+  end_year, end_month, end_day = convert_date(to_date) 
 
-  for temp_date in perdelta(date(start_year, start_month, start_day), date(end_year, end_month, end_day), timedelta(days=1)):
+  for temp_date in perdelta(date(begin_year, begin_month, begin_day), date(end_year, end_month, end_day), timedelta(days=1)):
     
     url = '%s.export.CSV.zip' % (temp_date.strftime("%Y%m%d"))
     file_name = '%s.export.CSV' % (temp_date.strftime("%Y%m%d"))
@@ -245,25 +245,25 @@ if __name__ == '__main__':
                                whether or not to unzip the downloaded
                                files.""")
 
-    fetch_start_date_command = sub_parse.add_parser('fetch_start_date', 
-                                        help="""Download only the daily update for start date.""",
-                                        description="""Download updates for start date.""")
+    fetch_from_date_command = sub_parse.add_parser('fetch_from_date', 
+                                        help="""Download only the daily update starting from .""",
+                                        description="""Download updates for begin date.""")
     
-    fetch_start_date_command.add_argument('-d', '--directory', 
+    fetch_from_date_command.add_argument('-d', '--directory', 
                                         help="""Path of directory for file download""")
 
-    fetch_start_date_command.add_argument('-U', '--unzip', 
+    fetch_from_date_command.add_argument('-U', '--unzip', 
                                         action='store_true',
                                         default=False, 
                                         help="""Boolean flag indicating whether or not to unzip the downloaded files.""")
 
-    fetch_start_date_command.add_argument('-S', '--startdate',
+    fetch_from_date_command.add_argument('-F', '--fromdate',
                                         default=False, 
-                                        help="""Start date.""")
+                                        help="""Specify 'fromdate' to start from.""")
 
-    fetch_start_date_command.add_argument('-E', '--enddate',
+    fetch_from_date_command.add_argument('-T', '--todate',
                                         default=False, 
-                                        help="""End date.""")
+                                        help="""Specify 'to date', if not specified 'current date' is taken as 'end date'.""")
 
     fetch_upload_command = sub_parse.add_parser('fetch_upload', help="""Set the
                                                 script to run on a daily basis
@@ -318,11 +318,15 @@ if __name__ == '__main__':
 
     if args.command_name == 'fetch':
         get_daily_data(directory, args.unzip)
-    elif args.command_name == 'fetch_start_date':
-      if args.enddate == False:
-        get_gdelt_daily_data_from_start_date(directory, args.startdate)
+		
+    elif args.command_name == 'fetch_from_date':
+
+      if args.fromdate == False:
+      	get_daily_data(directory, args.unzip)
+      elif args.todate == False:
+        get_gdelt_daily_updates_from_date(directory, args.fromdate)
       else:
-        get_gdelt_daily_data_from_start_date(directory, args.startdate, args.enddate)
+        get_gdelt_daily_updates_from_date(directory, args.fromdate, args.todate)
 
         
     elif args.command_name == 'fetch_upload':

@@ -5,6 +5,7 @@ import sap_hana_credentials as credentials
 from folder_iterator import FolderIterator
 
 DATA_DIRECTORY = 'data'
+META_INFO_DIRECTORY = 'meta-info'
 TABLE_NAME = '"DEMOUSER00"."uni.vlba.gdelt.data::gdelt_dailyupdates"'
 COUNTRY = 'KAZ'
 
@@ -19,7 +20,7 @@ class GDELTDataLoader():
 
 	def __init__(self):
 		"""
-			Init method.
+			Init method that creates connection and iterates data folder.
 		"""
 
 		self.connection = self.get_connection()
@@ -28,7 +29,7 @@ class GDELTDataLoader():
 
 	def get_connection(self):
 		"""
-			(NoneType) -> (Object)
+			(obj) -> (obj)
 
 			Method that will return connection to the database using given credentials.
 		"""
@@ -38,9 +39,9 @@ class GDELTDataLoader():
 							  credentials.USER,\
 							  credentials.PASSWORD)
 
-	def build_test_query01(self):
+	def _build_test_query01(self):
 		"""
-			(NoneType) -> (str)
+			(obj) -> (str)
 
 			Building query for execution
 		"""
@@ -50,7 +51,7 @@ class GDELTDataLoader():
 
 		return query
 
-	def fetch_row_into_str(self, row):
+	def _fetch_row_into_str(self, row):
 		"""
 			(list) -> (str)
 
@@ -63,9 +64,9 @@ class GDELTDataLoader():
 		return str_row[:-5]
 
 
-	def run_query(self, query, fetch=False):		
+	def execute_query(self, query, fetch=False):		
 		"""
-			(Connection, str) -> NoneType
+			(obj, str) -> NoneType
 
 			Running given query and using given connection. 
 			Fetching result rows and printing them to standard output.
@@ -121,35 +122,48 @@ class GDELTDataLoader():
 
 		return ''
 
-
-
-	def form_insert_query(self, table_name, input_data, table_fields_names=None, table_fields_types=None):
+	def build_query_part(self, _data, table_fields_types, query_part):
 		"""
-			(obj, )
-			Returning insert sql statement
+			(obj, list, list, list, boolean) -> (str)
+
+			Building part of the query.
 		"""
 
-		# if table_fields is None:
+		result_query = '('
 
-		query_table_structure = '('
+		for index in xrange(len(_data)):
 
-		for index in xrange(len(input_data)):			
-			query_table_structure = query_table_structure + '"' + table_fields_names[index] + '"' + ','
+			if query_part == 1:
+				proper_value = '"' + _data[index] + '"'
+				
+			if query_part == 2:
+				proper_value = self.escape_data_for_sql(_data[index], table_fields_types[index])
+				
 
-		query_table_structure = query_table_structure[:len(query_table_structure)-1]
-		query_table_structure = query_table_structure + ')'
+			result_query = result_query + proper_value + ','
 
-		# query 
-		query_table_values = '('
-		for index in xrange(len(input_data)):			
-			proper_value = self.escape_data_for_sql(input_data[index], table_fields_types[index])
-			query_table_values = query_table_values + proper_value + ','
+		result_query = result_query[:len(result_query)-1]
+		result_query = result_query + ')'
 
-		query_table_values = query_table_values[:len(query_table_values)-1]
-		query_table_values = query_table_values + ')'
+		return result_query
 
+
+
+	def form_insert_query(self, table_name, _data, table_fields_names=None, table_fields_types=None):
+		"""
+			(obj, str, list, list) -> (str)
+
+			Returning "insert" SQL statement with values.
+		"""	
+
+		# creating first part of the query -> section with columns' names
+		query_table_structure = self.build_query_part(table_fields_names, table_fields_types, query_part=1)
+
+		# creating second part of the query -> section with values
+		query_values = self.build_query_part(_data, table_fields_types, query_part=2)
+		
 		# form query
- 		query = 'INSERT INTO ' + table_name + ' ' + query_table_structure + ' VALUES ' + query_table_values
+ 		query = 'INSERT INTO ' + table_name + ' ' + query_table_structure + ' VALUES ' + query_values
 
 		return query
 
@@ -157,15 +171,18 @@ class GDELTDataLoader():
 		"""
 			(obj, str) -> (list(), list())
 
-			Extracting table identifiers from the txt file.
-			'Table definitions' are taked by simple "copy->paste" from 'Open Definition' of table in SAP HANA Studio.
+			Extracting table identifiers from the ".txt" mask file.
+			'Table Definitions' are taken by simple "Copy->Paste" from 'Open Definition' visual interface of table in SAP HANA Studio.
 		"""
 
-		table_fields_names = list()
-		table_fields_types = list()		
+		table_fields_names, table_fields_types = list(), list()		 
 
-		mask_f = open(DATA_DIRECTORY + '/' + mask_file_name, "r")
+		mask_f = open(META_INFO_DIRECTORY + '/' + mask_file_name, "r")
+
+		# skipping line with descriptions of attributes
 		line = mask_f.readline()
+
+		# first line with data
 		line = mask_f.readline()
 		while line:
 			value_list = line.split(delim)
@@ -178,60 +195,64 @@ class GDELTDataLoader():
 		return table_fields_types, table_fields_names
 
 
-	def fetch_data_from_csv_and_insert(self, truncate_table=False):
+	def load_gdelt_data_to_db(self, truncate_table=False):
 		"""
-			Fetching data from CSV and loading to database.
+			(obj) -> NoneType
+
+			Fetching data from CSV with GDELT data and loading to database (with insert statements).
 		"""
 
 		table_fields_types, table_fields_names = self.identify_table_mask()
 		
-		# truncating table
+		# Truncating Table
 		if truncate_table:
-			query = "truncate table "  + TABLE_NAME;
+			query = 'TRUNCATE TABLE '  + TABLE_NAME;
 			try:
-				self.run_query(query)
+				self.execute_query(query)
 			except Exception, e:
-				print '[e] Exeption: ' + str(e)
+				print '[e] Exeption: %s' % (str(e))
 
 		total_queries = 0
 		total_error_queries = 0
 
 		for directory in self.data_csv_files:
 			for _file in self.data_csv_files[directory]:
+				sub_queries = 0
 				csv_f = open(DATA_DIRECTORY + '/' + _file, "r")
+				print '[i] Processing file: %s' % (_file)
 				line = csv_f.readline()
 				while line:
-
 					values_list = self.line_to_list(line)
-
-					if values_list[5] == COUNTRY:
+					if values_list[5] == COUNTRY or values_list[15] == COUNTRY:
 						query = self.form_insert_query(TABLE_NAME, values_list, table_fields_names, table_fields_types)
-						# print query
 						try:
-							self.run_query(query)
-							total_queries = total_queries + 1
+							sub_queries = sub_queries + 1
+							self.execute_query(query)							
 						except Exception, e:
 							total_error_queries = total_error_queries + 1
-							print '[e] Exeption: S' + str(e) + ' while processing ' + DATA_DIRECTORY + '/' + _file
-							print '\t[q] Query: ' + query
+							print '[e] Exeption: %s  while processing "%s" file' % (str(e), DATA_DIRECTORY + '/' + _file)
+							print '\t[q] Query that caused exception \n %s' % (query)
 
 					line = csv_f.readline()				
 				csv_f.close()
+				print '[i] Total queries processed from file "%s": %d' % (_file, sub_queries)
+				total_queries = total_queries + sub_queries
+				break;				
 
-		print '[i] Info: Total queries processed %d.' % (total_queries)
+		print '\n[i] Queries processed in total: %d\n' % (total_queries)
 
 		if total_error_queries > 0:
-			print '[i] Info: Total queries with errors %d.' % (total_error_queries)
+			print '[i] Queries processed in total with errors: %d' % (total_error_queries)
 		
 def main():
 	"""
 		(NoneType) -> NoneType
 
-		Processing .
+		Main method that creates objects and start processing.
 	"""
 
 	gdl = GDELTDataLoader()
-	gdl.fetch_data_from_csv_and_insert(truncate_table=True)
+	gdl.load_gdelt_data_to_db(truncate_table=True)
 
 
 if __name__ == '__main__':

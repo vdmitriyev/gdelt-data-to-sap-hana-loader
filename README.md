@@ -27,10 +27,15 @@ Load GDELT Daily Updates Your PC
 ```
 'gdelt_download.bat'
 ```
-* in command line
+* in command line (for only daily updates)
 ```
 python gdelt_download_daily.py fetch -d . -U
 ```
+* in command line (fromdate <option -F and date in format 'YYYYMMDD'>, todate <option -T and date in format 'YYYYMMDD'>)
+```
+python gdelt_download_daily.py fetch_from_date -d . -U -F 20140201 -T 20140228
+```
+
 
 Setting Credentials for the SAP HANA DB
 ======================================
