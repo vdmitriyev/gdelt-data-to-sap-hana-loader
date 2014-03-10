@@ -1,10 +1,6 @@
 About
 =====
-Simple python script that loads data from GDELT dataset to SAP HANA DB.
-
-General options
-===============
-* Load sample data from GDELT event database http://gdeltproject.org/data.html.
+Simple python script that loads data from GDELT dataset to SAP HANA DB table.
 
 Dependencies Setup
 ==================
@@ -17,10 +13,11 @@ Dependencies Setup
 GDELT Table Structure
 ====================================
 * Table structure is taken from GDELT table definition - http://gdeltproject.org/data/lookups/SQL.tablecreate.txt
-* To create table in SAP HANA script 'gdelt_dailyupdates.hdbtable' can be used
+* To create table in SAP HANA script use following script 'gdelt_dailyupdates.hdbtable'
+* Directory "data" contains python script that fetches daily data updates(interval can be specified) from GDELT website and stores and upzips them on your PC.
 
 
-Load GDELT Daily Updates Your PC
+Load GDELT Daily Updates from PC
 ======================================================
 * Move to the subdirectory data
 * Run on bat file
@@ -37,7 +34,7 @@ python gdelt_download_daily.py fetch_from_date -d . -U -F 20140201 -T 20140228
 ```
 
 
-Setting Credentials for the SAP HANA DB
+Credentials for the SAP HANA DB
 ======================================
 * Create file 'sap_hana_credentials.py'
 * Copy->Paste code below and insert your credentials
@@ -53,15 +50,16 @@ PASSWORD = '<password>'
 
 Run on Windows
 ==============
-Run 'run.bat'.
+To main python script on windows machine you can use 'run.bat'.
+Note: (a) all configurations must be performed before script can be executed properly;
 ```
 run.bat
 ```	
 
 Known Problems and Drawbacks
 ============================
-* Not all event from daily updates are parsed properly (some shift in data is possible);
-* All fields(if generated from SAP HANA .hdbtable) are generated as 'NVARCHAR' data type;
+* [FIXED] Not all event from daily updates are parsed properly (some shift in data is possible);
+* [FIXED] All fields(if generated from SAP HANA .hdbtable) are generated as 'NVARCHAR' data type;
 
 Credits
 =======
