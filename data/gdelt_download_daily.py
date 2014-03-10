@@ -17,19 +17,25 @@ __email__ = 'jub270@psu.edu'
 from datetime import date, timedelta
 
 def perdelta(start, end, delta):
+  """
+    (date, date, date) -> date
+
+    Recieves "start" and "end" and returns dates between them with inteval specified in "delta".
+  """
+
   curr = start
   while curr <= end:
     yield curr
     curr += delta
 
-def convert_date(_date):
+def convert_date(date_to_convert):
   """
     (str) -> (int, int, int)
 
-    Recieve _date in format 'yyyyddmm' (for example '20130101').
+    Recieves paramters "date_to_convert" in format 'yyyyddmm' (for example '20130101') and converts it to the int.
   """
 
-  return int(_date[:4]), int(_date[5:6]), int(_date[6:])
+  return int(date_to_convert[:4]), int(date_to_convert[4:6]), int(date_to_convert[6:])
 
 def get_gdelt_daily_updates_from_date(directory, from_date, to_date=None):
   """
@@ -42,10 +48,13 @@ def get_gdelt_daily_updates_from_date(directory, from_date, to_date=None):
   if to_date is None:
     to_date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y%m%d")
 
-  begin_year, begin_month, begin_day = convert_date(from_date)
-  end_year, end_month, end_day = convert_date(to_date) 
+  from_year, from_month, from_day = convert_date(from_date)
+  to_year, to_month, to_day = convert_date(to_date) 
 
-  for temp_date in perdelta(date(begin_year, begin_month, begin_day), date(end_year, end_month, end_day), timedelta(days=1)):
+  print ("%s %s %s " % (from_year, from_month, from_day))
+  print ("%s %s %s " % (to_year, to_month, to_day))
+
+  for temp_date in perdelta(date(from_year, from_month, from_day), date(to_year, to_month, to_day), timedelta(days=1)):
     
     url = '%s.export.CSV.zip' % (temp_date.strftime("%Y%m%d"))
     file_name = '%s.export.CSV' % (temp_date.strftime("%Y%m%d"))
