@@ -268,7 +268,7 @@ class GDELTDataLoader():
 				row = self.line_to_list(line)
 				if self.is_valid_row_to_insert(row):
 					if self.check_if_row_already_loaded(row, data_file):
-						print '[i] Following file is skipped: %s' % (data_file)
+						print '[i]  Skipped file: %s' % (data_file)
 						_continue_processing = False					
 					break
 				line = csv_f.readline()
@@ -284,7 +284,9 @@ class GDELTDataLoader():
 				line = csv_f.readline()
 
 		csv_f.close()
-		print '[i] Total queries processed from file "%s": %d' % (data_file, success_queries)
+
+		if not check_and_skip or success_queries > 0:
+			print '[i] Total queries processed from file "%s": %d' % (data_file, success_queries)
 
 		return success_queries, error_queries
 
