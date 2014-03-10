@@ -4,7 +4,7 @@ table.description = "GDELT Daily Updates Data";
 
 table.columns = [
 	{name = "GLOBALEVENTID"; sqlType = BIGINT; nullable = false; comment = "GLOBALEVENTID"; },
-	{name = "SQLDATE"; sqlType = INTEGER; nullable = true; comment = "SQLDATE"; },
+	{name = "SQLDATE"; sqlType = DATE; nullable = true; comment = "SQLDATE"; },
 	// {name = "SQLDATE"; sqlType = NVARCHAR; nullable = true; length = 255; comment = "SQLDATE"; },
 	{name = "SQLDATE"; sqlType = INTEGER; nullable = true; comment = "SQLDATE"; },
 	// {name = "SQLDATE"; sqlType = NVARCHAR; nullable = Actor2Codetrue; length = 255; comment = "SQLDATE"; },
