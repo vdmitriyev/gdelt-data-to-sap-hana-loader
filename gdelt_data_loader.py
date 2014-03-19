@@ -214,7 +214,8 @@ class GDELTDataLoader():
 			else:
 				print "[e] Something wrong with execution."
 		except Exception, e:
-			print '[e] Exeption: %s while processing "%s" file in method %s' % (str(e), DATA_DIRECTORY + '/' + file_name, "check_if_row_already_loaded")
+			print '[e] Exeption: %s while processing "%s" file in method %s' % \
+                  (str(e), DATA_DIRECTORY + '/' + file_name, "check_if_row_already_loaded")
 			print '\t[q] Query that caused exception \n %s' % (query)
 
 
