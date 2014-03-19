@@ -1,5 +1,2 @@
-sap_hana_credentials.py
-*.pyc
-*.txt
-extra/*
-generated_queries.txt
+.idea
+.idea/*

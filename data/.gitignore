@@ -1,6 +1,6 @@
-*.CSV
+unzipped/*.CSV
+zipped/*.zip
 *.csv
-*.zip
 *.pyc
 *.txt
-gdelt_download.bat
+scripts/gdelt_download.bat
