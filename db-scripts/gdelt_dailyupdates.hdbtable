@@ -73,11 +73,16 @@ table.columns = [
 	{name = "Actor2Geo_ADM1Code" ; sqlType = NVARCHAR; nullable = true; length = 4; comment = "Actor2Geo_ADM1Code"; },
 	// {name = "Actor2Geo_Lat" ; sqlType = FLOAT; nullable = true; comment = "Actor2Geo_Lat"; },
 	// {name = "Actor2Geo_Long" ; sqlType = FLOAT; nullable = true; comment = "Actor2Geo_Long"; },
-	// {name = "ActionGeo_Type" ; sqlType = INTEGER; nullable = true; comment = "ActionGeo_Type"; },
+	
 	
 	{name = "Actor2Geo_Lat" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "Actor2Geo_Lat"; },
 	{name = "Actor2Geo_Long" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "Actor2Geo_Long"; },
+	{name = "Actor2Geo_FeatureID" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "Actor2Geo_FeatureID"; },
+	
+	
+	// {name = "ActionGeo_Type" ; sqlType = INTEGER; nullable = true; comment = "ActionGeo_Type"; },
 	{name = "ActionGeo_Type" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "ActionGeo_Type"; },
+	
 	
 	{name = "ActionGeo_FullName" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "ActionGeo_FullName"; },
 	{name = "ActionGeo_CountryCode" ; sqlType = NVARCHAR; nullable = true; length = 255; comment = "ActionGeo_CountryCode"; },

@@ -92,7 +92,7 @@ class GDELTDataLoader():
 
 		result = list()		
 		_line_splited = _line.split('\t')
-
+		
 		for value in _line_splited:
 			value_stripped = value.strip().rstrip()			
 			result.append(value_stripped)				
@@ -106,7 +106,8 @@ class GDELTDataLoader():
 
 			Escape symbols to be used in sql statements.
 		"""
-		value = value.replace('\'','"')
+		value = value.replace('\'', '"')
+		value = value.replace(',', '_')
 		
 		if len(value) == 0:
 			if sql_type in ('BIGINT', 'INTEGER', 'FLOAT', 'DOUBLE'):
@@ -120,7 +121,7 @@ class GDELTDataLoader():
 			if sql_type == 'NVARCHAR':
 				return '\'' + value + '\''
 
-		return ''
+		return '\'' + value + '\''
 
 	def build_query_part(self, input_data, table_fields_types, query_part):
 		"""
@@ -129,7 +130,7 @@ class GDELTDataLoader():
 			Building part of the query, according to the value passed with 'query_part' parameter (should be 1 or 2).
 		"""
 
-		result_query = '('
+		result_query = '('		
 
 		for index in xrange(len(input_data)):
 
@@ -140,6 +141,9 @@ class GDELTDataLoader():
 				proper_value = self.escapeinput_data_for_sql(input_data[index], table_fields_types[index])
 				
 			result_query = result_query + proper_value + ','
+
+		if query_part == 2:
+			result_query = result_query + '\'\'' + ','
 
 		result_query = result_query[:len(result_query)-1]
 		result_query = result_query + ')'
@@ -241,7 +245,8 @@ class GDELTDataLoader():
 
 		try:				
 			query = self.form_insert_query(TABLE_NAME, row, table_fields_names, table_fields_types)
-			self.execute_query(query)							
+			# print query
+			self.execute_query(query)			
 		except Exception, e:				
 			print '[e] Exeption: %s  while processing "%s" file' % (str(e), DATA_DIRECTORY + '/' + data_file)
 			print '\t[q] Query that caused exception \n %s' % (query)
@@ -331,7 +336,7 @@ def main():
 
 	gdl = GDELTDataLoader()
 	# gdl.load_gdeltinput_data_to_db(truncate_table=False)
-	gdl.load_gdeltinput_data_to_db(truncate_table=False, skip_loaded_files=True)
+	gdl.load_gdeltinput_data_to_db(truncate_table=True, skip_loaded_files=False)
 
 
 if __name__ == '__main__':
