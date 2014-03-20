@@ -336,7 +336,7 @@ def main():
 
 	gdl = GDELTDataLoader()
 	# gdl.load_gdeltinput_data_to_db(truncate_table=False)
-	gdl.load_gdeltinput_data_to_db(truncate_table=True, skip_loaded_files=False)
+	gdl.load_gdeltinput_data_to_db(truncate_table=False, skip_loaded_files=True)
 
 
 if __name__ == '__main__':
