@@ -26,26 +26,26 @@ Load GDELT Daily Updates from PC
 ```
 * in command line (for only daily updates)
 ```
-python gdelt_download_daily.py fetch -d . -U
+python gdelt_download_daily.py fetch_from_date -d "../zipped" -U -du "../unzipped"
 ```
-* in command line (fromdate <option -F and date in format 'YYYYMMDD'>, todate <option -T and date in format 'YYYYMMDD'>)
+* in command line (fromdate &lt;option -F and date in format 'YYYYMMDD'&gt;, todate &lt;option -T and date in format 'YYYYMMDD'&gt;)
 ```
-python gdelt_download_daily.py fetch_from_date -d . -U -F 20140201 -T 20140228
+python gdelt_download_daily.py fetch_from_date -d "../zipped" -U -du "../unzipped" -F 20140321
 ```
 
 
 Credentials for the SAP HANA DB
 ======================================
 * Create file 'sap_hana_credentials.py'
-* Copy->Paste code below and insert your credentials
+* Copy-&gt;Paste code below and insert your credentials
 ```
 # Server 
-SERVER = '<server>'
-PORT = <port>
+SERVER = '&lt;server&gt;'
+PORT = &lt;port&gt;
 
 # User Credentials
-USER = '<user>'
-PASSWORD = '<password>'
+USER = '&lt;user&gt;'
+PASSWORD = '&lt;password&gt;'
 ```
 
 Run on Windows
