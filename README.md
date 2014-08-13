@@ -48,6 +48,8 @@ USER = '&lt;user&gt;'
 PASSWORD = '&lt;password&gt;'
 ```
 
+Applications '&lt;port&gt; should be 3'&lt;instance number&gt;15, for example, 30015, if the instance is 00.
+
 Run on Windows
 ==============
 To main python script on windows machine you can use 'run.bat'.
