@@ -6,7 +6,7 @@ from folder_iterator import FolderIterator
 
 DATA_DIRECTORY = '../data/unzipped'
 META_INFO_DIRECTORY = 'meta-info'
-TABLE_NAME = '"DEMOUSER00"."uni.vlba.gdelt.data::gdelt_dailyupdates"'
+TABLE_NAME = '"PGOLIMP_DMITRIYEV"."uni.vlba.gdelt.data::gdelt_dailyupdates"'
 COUNTRY = 'KAZ'
 
 """
@@ -170,11 +170,11 @@ class GDELTDataLoader():
 
 		return query
 
-	def identify_table_mask(self, maskdata_file_name='daily_update_table-mask.txt', delim=';'):
+	def identify_table_mask(self, maskdata_file_name='daily_update_table-mask.csv', delim=';'):
 		"""
 			(obj, str) -> (list(), list())
 
-			Extracting table identifiers from the ".txt" mask file.
+			Extracting table identifiers from the ".csv" mask file.
 			'Table Definitions' are taken by simple "Copy->Paste" from 'Open Definition' visual interface of table in SAP HANA Studio.
 		"""
 

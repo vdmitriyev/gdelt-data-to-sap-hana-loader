@@ -40,15 +40,16 @@ Credentials for the SAP HANA DB
 * Copy-&gt;Paste code below and insert your credentials
 ```
 # Server 
-SERVER = '&lt;server&gt;'
-PORT = &lt;port&gt;
+SERVER = '<server>'
+PORT = <port>
 
 # User Credentials
-USER = '&lt;user&gt;'
-PASSWORD = '&lt;password&gt;'
+USER = '<user>'
+PASSWORD = '<password>'
 ```
 
-Applications '&lt;port&gt; should be 3'&lt;instance number&gt;15, for example, 30015, if the instance is 00.
+Applications &lt;port&gt; should be 3&lt;instance number&gt;15. 
+For example, 30015, if the instance is 00.
 
 Run on Windows
 ==============
